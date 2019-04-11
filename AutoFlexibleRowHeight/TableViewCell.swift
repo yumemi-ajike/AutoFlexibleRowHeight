@@ -144,19 +144,11 @@ final class HorizontalTableViewCell: TableViewCell {
             make.edges.equalToSuperview().inset(insets)
         }
         imageBaseView.snp.makeConstraints { (make) in
-            if #available(iOS 11, *) {
-                make.width.equalTo(140)
-            } else {
-                make.width.equalTo(140).priority(999)
-            }
+            make.width.equalTo(64)
             make.height.greaterThanOrEqualTo(imageBaseView.snp.width).priority(UILayoutPriority.defaultLow.rawValue)
         }
         thumbnailImageView.snp.makeConstraints { (make) in
-            if #available(iOS 11, *) {
-                make.size.equalTo(140)
-            } else {
-                make.size.equalTo(140).priority(999)
-            }
+            make.size.equalTo(64)
             make.center.equalToSuperview()
         }
     }

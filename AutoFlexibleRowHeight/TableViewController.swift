@@ -79,6 +79,7 @@ class TableViewController: UITableViewController {
         super.viewDidLoad()
         tableView.estimatedRowHeight = 44
         tableView.rowHeight = UITableView.automaticDimension
+        tableView.separatorStyle = .none
         tableView.register(VerticalTableViewCell.self, forCellReuseIdentifier: "vertical")
         tableView.register(HorizontalTableViewCell.self, forCellReuseIdentifier: "horizontal")
     }
