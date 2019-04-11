@@ -37,42 +37,25 @@ class TableViewCell: UITableViewCell {
         stackView.axis = .vertical
         stackView.distribution = .equalSpacing
         stackView.spacing = 8
-        contentView.addSubview(stackView)
         
-        thumbnailImageView.borderColor = .red
         thumbnailImageView.contentMode = .scaleAspectFill
         thumbnailImageView.clipsToBounds = true
-        stackView.addArrangedSubview(thumbnailImageView)
         
-        titleLabel.borderColor = .orange
         titleLabel.font = UIFont.boldSystemFont(ofSize: 18)
         titleLabel.textColor = .black
         titleLabel.numberOfLines = 0
-        stackView.addArrangedSubview(titleLabel)
         
-        dateLabel.borderColor = .purple
         dateLabel.font = UIFont.systemFont(ofSize: 11)
         dateLabel.textColor = .lightGray
         dateLabel.numberOfLines = 1
-        stackView.addArrangedSubview(dateLabel)
         
-        descriptionLabel.borderColor = .cyan
         descriptionLabel.font = UIFont.systemFont(ofSize: 13)
         descriptionLabel.textColor = .gray
         descriptionLabel.numberOfLines = 3
-        stackView.addArrangedSubview(descriptionLabel)
         
         bottomSeparatorView.backgroundColor = .lightGray
         contentView.addSubview(bottomSeparatorView)
         
-        stackView.snp.makeConstraints { (make) in
-            make.edges.equalToSuperview().inset(insets)
-        }
-        thumbnailImageView.snp.makeConstraints { (make) in
-            make.width.equalTo(stackView.snp.width)
-            // 16 : 9 and hidden priority
-            make.height.equalTo(stackView.snp.width).multipliedBy(0.5625).priority(UILayoutPriority.defaultLow.rawValue)
-        }
         bottomSeparatorView.snp.makeConstraints { (make) in
             make.leading.trailing.equalToSuperview().inset(insets)
             make.bottom.equalToSuperview()
@@ -105,22 +88,85 @@ class TableViewCell: UITableViewCell {
     }
 }
 
-extension UIView {
-    var borderColor: UIColor? {
+final class VerticalTableViewCell: TableViewCell {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        contentView.addSubview(stackView)
+        stackView.addArrangedSubview(thumbnailImageView)
+        stackView.addArrangedSubview(titleLabel)
+        stackView.addArrangedSubview(dateLabel)
+        stackView.addArrangedSubview(descriptionLabel)
+        
+        stackView.snp.makeConstraints { (make) in
+            make.edges.equalToSuperview().inset(insets)
+        }
+        thumbnailImageView.snp.makeConstraints { (make) in
+            make.width.equalTo(stackView.snp.width)
+            // 16 : 9 and hidden priority
+            make.height.equalTo(stackView.snp.width).multipliedBy(0.5625).priority(UILayoutPriority.defaultLow.rawValue)
+        }
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+final class HorizontalTableViewCell: TableViewCell {
+    private let imageBaseView = UIView()
+    override var isThumbnailHidden: Bool {
         get {
-            guard let borderColor = layer.borderColor else { return nil }
-            return UIColor(cgColor: borderColor)
+            return imageBaseView.isHidden
         }
         set {
-            #if DEBUG
-            return
-            #endif
-            if let borderColor = newValue {
-                layer.borderColor = borderColor.cgColor
-                layer.borderWidth = layer.borderWidth == 0 ? 1 : layer.borderWidth
-            } else {
-                layer.borderColor = nil
-            }
+            imageBaseView.isHidden = newValue
+            thumbnailImageView.isHidden = newValue
         }
+    }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        let horizontalStackView = UIStackView()
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        horizontalStackView.axis = .horizontal
+        horizontalStackView.alignment = .top
+        horizontalStackView.distribution = .fill
+        horizontalStackView.spacing = 8
+        contentView.addSubview(horizontalStackView)
+        
+        stackView.addArrangedSubview(titleLabel)
+        stackView.addArrangedSubview(descriptionLabel)
+        stackView.addArrangedSubview(dateLabel)
+        
+        horizontalStackView.addArrangedSubview(imageBaseView)
+        imageBaseView.addSubview(thumbnailImageView)
+        horizontalStackView.addArrangedSubview(stackView)
+        
+        horizontalStackView.snp.makeConstraints { (make) in
+            make.edges.equalToSuperview().inset(insets)
+        }
+        imageBaseView.snp.makeConstraints { (make) in
+            if #available(iOS 11, *) {
+                make.width.equalTo(140)
+            } else {
+                make.width.equalTo(140).priority(999)
+            }
+            make.height.greaterThanOrEqualTo(imageBaseView.snp.width).priority(UILayoutPriority.defaultLow.rawValue)
+        }
+        thumbnailImageView.snp.makeConstraints { (make) in
+            if #available(iOS 11, *) {
+                make.size.equalTo(140)
+            } else {
+                make.size.equalTo(140).priority(999)
+            }
+            make.center.equalToSuperview()
+        }
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        isThumbnailHidden = false
     }
 }

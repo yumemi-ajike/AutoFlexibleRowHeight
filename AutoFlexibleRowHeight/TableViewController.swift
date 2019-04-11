@@ -79,18 +79,27 @@ class TableViewController: UITableViewController {
         super.viewDidLoad()
         tableView.estimatedRowHeight = 44
         tableView.rowHeight = UITableView.automaticDimension
-        tableView.register(TableViewCell.self, forCellReuseIdentifier: "default")
+        tableView.register(VerticalTableViewCell.self, forCellReuseIdentifier: "vertical")
+        tableView.register(HorizontalTableViewCell.self, forCellReuseIdentifier: "horizontal")
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        return 2
     }
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return items.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "default", for: indexPath) as! TableViewCell
+        let cell: TableViewCell
+        switch indexPath.section {
+        case 0:
+            cell = tableView.dequeueReusableCell(withIdentifier: "vertical", for: indexPath) as! VerticalTableViewCell
+        case 1:
+            cell = tableView.dequeueReusableCell(withIdentifier: "horizontal", for: indexPath) as! HorizontalTableViewCell
+        default:
+            cell = tableView.dequeueReusableCell(withIdentifier: "default", for: indexPath) as! TableViewCell
+        }
         cell.configure(with: items[indexPath.row])
         return cell
     }
